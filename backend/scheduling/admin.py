@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import CustomUser, Event
+from .models import CustomUser
 
-admin.site.register(CustomUser)
-admin.site.register(Event)
+class CustomUserAdmin(admin.ModelAdmin):
+    model = CustomUser
+
+admin.site.register(CustomUser, CustomUserAdmin)
