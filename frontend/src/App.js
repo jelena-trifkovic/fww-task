@@ -1,11 +1,11 @@
 import React from 'react';
 import './App.css';
-import Scheduler from './components/Scheduler';
+import TabNavigator from './components/TabNavigator';
 
 function App() {
   return (
     <div className="App">
-      <Scheduler />
+      <TabNavigator />
     </div>
   );
 }
