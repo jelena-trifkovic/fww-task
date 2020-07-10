@@ -39,6 +39,12 @@ class SigninForm extends Component {
 
     render() {
         return (
+            <div
+                style={{
+                    width: "60%",
+                    margin: "auto"
+                }} 
+            >
             <Form
                 name="normal_login"
                 className="login-form"
@@ -93,6 +99,7 @@ class SigninForm extends Component {
                     </Button>
                 </Form.Item>
             </Form>
+        </div>
         );
     }
 };
