@@ -1,9 +1,32 @@
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import status, permissions
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import action
+from django.shortcuts import get_object_or_404
 from .serializers import CustomUserSerializer, EventSerializer
 from .models import CustomUser, Event
+
+class EventsGet(APIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+
+    def get(self, request, username):
+        #serializer = EventSerializer(data=request.data)
+        user = get_object_or_404(CustomUser, username=username)
+        events = self.queryset.filter(user=user)
+        print(events)
+        return Response(EventSerializer(events, many=True).data, status=status.HTTP_200_OK)
+
+class CustomUserGet(APIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+
+    def get(self, request, username):
+        serializer = CustomUserSerializer(data=request.data)
+        user = get_object_or_404(CustomUser, username=username)
+        return Response(CustomUserSerializer(user).data, status=status.HTTP_200_OK)
 
 class CustomUserCreate(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -13,17 +36,6 @@ class CustomUserCreate(APIView):
         if serializer.is_valid():
             user = serializer.save()
             if user:
-                json = serializer.data
-                return Response(json, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class EventCreate(APIView):
-
-    def post(self, request, format='json'):
-        serializer = EventSerializer(data=request.data)
-        if serializer.is_valid():
-            event = serializer.save()
-            if event:
                 json = serializer.data
                 return Response(json, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
