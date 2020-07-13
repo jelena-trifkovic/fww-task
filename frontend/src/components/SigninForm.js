@@ -112,7 +112,7 @@ class SigninForm extends Component {
                     </Form.Item>
                 </Form>);
         } else {
-            body = (<Scheduler events={this.state.events}/>);
+            body = (<Scheduler events={this.state.events} username={this.state.username}/>);
         }
 
         return (

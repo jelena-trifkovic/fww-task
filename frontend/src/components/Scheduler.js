@@ -18,14 +18,30 @@ class Scheduler extends React.Component {
     state = {
         value: moment(),
         selectedValue: moment(),
-        events: [],
+        events: this.props.events,
         selected: false,
         editDeleteEvent: false,
-        createEvent: false
+        createEvent: false,
+        userId: 0,
+        deleteEventId: 0
     };
+
+    componentDidMount() {
+        axios.get(
+            `http://127.0.0.1:8000/api/users/${this.props.username}`
+            , {
+                headers: {
+                  'Authorization': `JWT ${localStorage.getItem('access_token')}` 
+                }
+              })
+            .then(res => {
+                console.log(res);
+                this.setState({ userId: res.data.id });
+        }).catch(err => { console.log(err); });
+    }
     
     dateCellRender = value => {
-        const { events } = this.props;
+        const { events } = this.state;
         console.log(events);
         let event = events.find(elem => elem.date == value.format('YYYY-MM-DD'));
         if (event) {
@@ -43,7 +59,20 @@ class Scheduler extends React.Component {
             selected: true
         });
 
-        // ENDPOINT 2 - CREATE/EDIT/DELETE
+        const { events } = this.state;
+        console.log(events);
+        let event = events.find(elem => elem.date == value.format('YYYY-MM-DD'));
+        if (event) {
+            this.setState({
+                createEvent: false,
+                editDeleteEvent: true
+            });
+        } else {
+            this.setState({
+                createEvent: true,
+                editDeleteEvent: false
+            });
+        }
     };
 
     onPanelChange = value => {
@@ -53,8 +82,86 @@ class Scheduler extends React.Component {
         });
     };
 
-    onFinish = values => {
+    onFinishCreate = values => {
         console.log('Received values of form: ', values);
+
+        axios.post(
+            `http://127.0.0.1:8000/api/event/create/`,
+            {
+                name: values.eventName,
+                date: this.state.selectedValue.format('YYYY-MM-DD'),
+                user: this.state.userId
+            },
+            {
+                headers: {
+                  'Authorization': `JWT ${localStorage.getItem('access_token')}` 
+                }
+            })
+            .then(res => {
+                console.log(res);
+                this.setState({ 
+                    events: this.state.events.concat([ res.data ]),
+                    createEvent: false,
+                    editDeleteEvent: true
+                });
+        }).catch(err => { console.log(err); });
+    };
+
+    onFinishEdit = values => {
+        console.log('Received values of form: ', values);
+        let event = this.state.events.find(elem => elem.date == this.state.selectedValue.format('YYYY-MM-DD'));
+
+        axios.put(
+            `http://127.0.0.1:8000/api/event/edit/${event.id}`,
+            {
+                name: values.eventName,
+                date: this.state.selectedValue.format('YYYY-MM-DD'),
+                user: this.state.userId
+            },
+            {
+                headers: {
+                  'Authorization': `JWT ${localStorage.getItem('access_token')}` 
+                }
+            })
+            .then(res => {
+                console.log(res);
+                this.setState({ 
+                    events: this.state.events.map(elem => {
+                        if (elem.id == res.data.id) 
+                            return res.data;
+                        else return elem;
+                    })
+                });
+        }).catch(err => { console.log(err); });
+    };
+
+    onFinishDelete = values => {
+        console.log('Received values of form: ', values);
+        let event = this.state.events.find(elem => elem.date == this.state.selectedValue.format('YYYY-MM-DD'));
+
+        this.setState({ 
+            deleteEventId: event.id
+        });
+
+        axios.delete(
+            `http://127.0.0.1:8000/api/event/delete/${event.id}`,
+            {
+                headers: {
+                  'Authorization': `JWT ${localStorage.getItem('access_token')}` 
+                }
+            })
+            .then(res => {
+                console.log('delete');
+                this.setState({ 
+                    events: this.state.events.filter(elem => {
+                        if (elem.id != this.state.deleteEventId) 
+                            return true;
+                        else return false;
+                    }),
+                    createEvent: true,
+                    editDeleteEvent: false
+                });
+        }).catch(err => { console.log(err); });
     };
 
     render() {
@@ -78,7 +185,7 @@ class Scheduler extends React.Component {
                 <Space direction="vertical">
                     <Text type="primary">Do you want to create the event?</Text>
                     <Form initialValues={{ remember: true }}
-                        onFinish={this.onFinish}
+                        onFinish={this.onFinishCreate}
                     >
                         <Form.Item
                             name="eventName"
@@ -87,7 +194,7 @@ class Scheduler extends React.Component {
                             <Input placeholder="Event name" />
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary">Create</Button>
+                            <Button type="primary" htmlType="submit">Create</Button>
                         </Form.Item>
                     </Form>
                 </Space>
@@ -98,11 +205,11 @@ class Scheduler extends React.Component {
 
         let editForm;
         if (editDeleteEvent) {
-            editForm = <Card style={{ width: "100%", margin: "auto", marginTop: "2vh" }}>
+            editForm = <Card style={{ width: "60%", margin: "auto", marginTop: "2vh" }}>
                 <Space direction="vertical">
                     <Text type="primary">Do you want to edit the event?</Text>
                     <Form initialValues={{ remember: true }}
-                        onFinish={this.onFinish}
+                        onFinish={this.onFinishEdit}
                     >
                         <Form.Item
                             name="eventName"
@@ -111,7 +218,7 @@ class Scheduler extends React.Component {
                             <Input placeholder="Event name" />
                         </Form.Item>
                         <Form.Item>
-                            <Button>Edit</Button>
+                            <Button htmlType="submit">Edit</Button>
                         </Form.Item>
                     </Form>
                 </Space>
@@ -124,8 +231,14 @@ class Scheduler extends React.Component {
         if (editDeleteEvent) {
             deleteForm = <Card style={{ width: "60%", margin: "auto", marginTop: "2vh" }}>
                 <Space direction="vertical">
-                    <Text type="danger">Do you want to delete event?</Text>
-                    <Button type="primary" danger>Delete</Button>
+                            <Text type="danger">Do you want to delete the event?</Text>
+                        <Form initialValues={{ remember: true }}
+                            onFinish={this.onFinishDelete}
+                        >
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" danger>Delete</Button>
+                        </Form.Item>
+                    </Form>
                 </Space>
             </Card>;
         } else {

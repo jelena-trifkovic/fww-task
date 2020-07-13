@@ -22,4 +22,4 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ('name', 'date', 'user')
+        fields = ('id', 'name', 'date', 'user')
