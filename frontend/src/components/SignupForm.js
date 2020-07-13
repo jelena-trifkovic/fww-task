@@ -44,7 +44,6 @@ class SignupForm extends Component {
             alert = <Alert
                 message={"You have successfully registered!"}
                 style={{
-                    width: "30%",
                     margin: "auto",
                     marginBottom: "2vh"
                 }} />;
@@ -55,7 +54,7 @@ class SignupForm extends Component {
         return (
             <div
                 style={{
-                    width: "60%",
+                    width: "30%",
                     margin: "auto"
                 }} 
             >
@@ -67,10 +66,6 @@ class SignupForm extends Component {
                         remember: true,
                     }}
                     onFinish={this.onFinish}
-                    style={{
-                        width: '30%',
-                        margin: 'auto'
-                    }}
                 >
                     <Form.Item
                         name="username"
