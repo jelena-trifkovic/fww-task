@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import axios from 'axios';
+// import axios from 'axios';
+import axiosInstance from '../api/auth';
 import Scheduler from './Scheduler';
 
 const buttonText = 'Sign in';
@@ -23,7 +24,7 @@ class SigninForm extends Component {
 
     onFinish = values => {
         console.log('onFinish: ', values);
-        axios.post(
+        axiosInstance.post(
             'http://127.0.0.1:8000/api/token/obtain/',
             {
                 username: this.state.username,
@@ -34,7 +35,7 @@ class SigninForm extends Component {
                 console.log(res);
                 localStorage.setItem('access_token', res.data.access);
                 localStorage.setItem('refresh_token', res.data.refresh);
-                axios.get(
+                axiosInstance.get(
                     `http://127.0.0.1:8000/api/events/${this.state.username}`
                     , {
                         headers: {

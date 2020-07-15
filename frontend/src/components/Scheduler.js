@@ -9,7 +9,8 @@ import { Card } from 'antd';
 import { Form } from 'antd';
 import { Input } from 'antd';
 import moment from 'moment';
-import axios from 'axios';
+import axiosInstance from '../api/auth';
+// import axios from 'axios';
 
 const { Text } = Typography;
 
@@ -27,7 +28,7 @@ class Scheduler extends React.Component {
     };
 
     componentDidMount() {
-        axios.get(
+        axiosInstance.get(
             `http://127.0.0.1:8000/api/users/${this.props.username}`
             , {
                 headers: {
@@ -85,7 +86,7 @@ class Scheduler extends React.Component {
     onFinishCreate = values => {
         console.log('Received values of form: ', values);
 
-        axios.post(
+        axiosInstance.post(
             `http://127.0.0.1:8000/api/event/create/`,
             {
                 name: values.eventName,
@@ -111,7 +112,7 @@ class Scheduler extends React.Component {
         console.log('Received values of form: ', values);
         let event = this.state.events.find(elem => elem.date == this.state.selectedValue.format('YYYY-MM-DD'));
 
-        axios.put(
+        axiosInstance.put(
             `http://127.0.0.1:8000/api/event/edit/${event.id}`,
             {
                 name: values.eventName,
@@ -143,7 +144,7 @@ class Scheduler extends React.Component {
             deleteEventId: event.id
         });
 
-        axios.delete(
+        axiosInstance.delete(
             `http://127.0.0.1:8000/api/event/delete/${event.id}`,
             {
                 headers: {
