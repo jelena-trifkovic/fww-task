@@ -1,6 +1,7 @@
 import React from 'react';
 import { Menu } from 'antd';
 import { Link } from "react-router-dom";
+import axiosInstance from '../api/auth';
 
 const centerStyle = {
     position: 'relative',
@@ -16,6 +17,13 @@ class TabNavigator extends React.Component {
     handleClick = e => {
         console.log('click ', e);
         this.setState({ current: e.key });
+
+        if (e.key == 'logout') {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            axiosInstance.defaults.headers['Authorization'] = null;
+            this.props.logOut();
+        }
     };
 
     render() {
@@ -25,22 +33,22 @@ class TabNavigator extends React.Component {
         if (isLoggedIn) {
             menubar = (
                 <Menu onClick={this.handleClick} selectedKeys={[current]} mode="horizontal" style={centerStyle}>
-                <Menu.Item key="calendar">
-                            <Link to="/signin/">
-                                Calendar
-                            </Link>
-                        </Menu.Item>
-                        <Menu.Item key="logout">
-                            <Link to="/signin/">
-                                Log out
+                    <Menu.Item key="calendar">
+                        <Link to="/signin/">
+                            Calendar
                             </Link>
                     </Menu.Item>
+                    <Menu.Item key="logout">
+                        <Link to="/signin/">
+                            Log out
+                        </Link>
+                    </Menu.Item>
                 </Menu>
-                ); 
+            );
         } else {
             menubar = (
-            <Menu onClick={this.handleClick} selectedKeys={[current]} mode="horizontal" style={centerStyle}>
-            <Menu.Item key="signin">
+                <Menu onClick={this.handleClick} selectedKeys={[current]} mode="horizontal" style={centerStyle}>
+                    <Menu.Item key="signin">
                         <Link to="/signin/">
                             Sign in
                         </Link>
@@ -49,13 +57,13 @@ class TabNavigator extends React.Component {
                         <Link to="/signup/">
                             Sign up
                         </Link>
-                </Menu.Item>
-            </Menu>
+                    </Menu.Item>
+                </Menu>
             );
         }
         return (
             <div>
-                { menubar }
+                {menubar}
             </div>
         );
     }

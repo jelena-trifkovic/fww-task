@@ -69,10 +69,14 @@ class SigninForm extends Component {
             alert = '';
         }
 
+        const logOut = () => {
+            this.setState({isLoggedIn: false});
+        };
+
         let body;
         let menu;
         if (!isLoggedIn) {
-            menu = <TabNavigator currentMenu="signin" isLoggedIn={isLoggedIn} />;
+            menu = <TabNavigator currentMenu="signin" isLoggedIn={isLoggedIn} logOut={logOut} />;
             body = (
                 <Form
                     name="normal_login"
@@ -130,7 +134,7 @@ class SigninForm extends Component {
                     </Form.Item>
                 </Form>);
         } else {
-            menu = (<TabNavigator currentMenu="calendar" isLoggedIn={isLoggedIn} />);
+            menu = (<TabNavigator currentMenu="calendar" isLoggedIn={isLoggedIn} logOut={logOut} />);
             body = (<Scheduler events={this.state.events} username={this.state.username} />);
         }
 
