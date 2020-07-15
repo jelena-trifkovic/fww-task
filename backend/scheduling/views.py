@@ -13,7 +13,6 @@ class EventsGet(APIView):
     serializer_class = EventSerializer
 
     def get(self, request, username):
-        #serializer = EventSerializer(data=request.data)
         user = get_object_or_404(CustomUser, username=username)
         events = self.queryset.filter(user=user)
         print(events)
@@ -52,6 +51,7 @@ class EventCreate(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class EventEdit(APIView):
+    
     def put(self, request, pk):
         try:
             event = Event.objects.get(pk=pk)

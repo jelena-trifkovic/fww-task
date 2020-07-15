@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Form, Input, Button, Alert } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import TabNavigator from './TabNavigator';
-import axiosInstance from '../api/auth';
+import axios from 'axios';
 
 const buttonText = 'Sign up';
 
@@ -22,8 +22,8 @@ class SignupForm extends Component {
 
     onFinish = values => {
         console.log('onFinish: ', values);
-        axiosInstance.post(
-            '/user/create/',
+        axios.post(
+            'http://127.0.0.1:8000/api/user/create/',
             {
                 username: this.state.username,
                 password: this.state.password
