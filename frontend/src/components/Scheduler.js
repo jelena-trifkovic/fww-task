@@ -173,7 +173,8 @@ class Scheduler extends React.Component {
                 message={`You selected date: ${selectedValue && selectedValue.format('YYYY-MM-DD')}`}
                 style={{
                     width: "60%",
-                    margin: "auto"
+                    margin: "auto",
+                    marginTop: "2vh"
                 }} />;
         } else {
             alert = '';
@@ -257,7 +258,8 @@ class Scheduler extends React.Component {
                     onSelect={this.onSelect}
                     style={{
                         width: "60%",
-                        margin: "auto"
+                        margin: "auto",
+                        marginTop: "2vh"
                     }}
                 />
             </div>

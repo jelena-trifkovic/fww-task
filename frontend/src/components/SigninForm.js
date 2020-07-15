@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Alert } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import axios from 'axios';
 import TabNavigator from './TabNavigator';
 import axiosInstance from '../api/auth';
 import Scheduler from './Scheduler';
@@ -11,8 +12,7 @@ class SigninForm extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { username: "", password: "", isLoggedIn: false, events: [] };
-
+        this.state = { username: "", password: "", events: [], isLoggedIn: false, loginError: false };
         this.handleChange = this.handleChange.bind(this);
     }
 
@@ -24,7 +24,7 @@ class SigninForm extends Component {
 
     onFinish = values => {
         console.log('onFinish: ', values);
-        axiosInstance.post(
+        axios.post(
             'http://127.0.0.1:8000/api/token/obtain/',
             {
                 username: this.state.username,
@@ -33,30 +33,46 @@ class SigninForm extends Component {
         )
             .then(res => {
                 console.log(res);
+                axiosInstance.defaults.headers['Authorization'] = "JWT " + res.data.access;
                 localStorage.setItem('access_token', res.data.access);
                 localStorage.setItem('refresh_token', res.data.refresh);
                 axiosInstance.get(
-                    `http://127.0.0.1:8000/api/events/${this.state.username}`
-                    , {
-                        headers: {
-                          'Authorization': `JWT ${localStorage.getItem('access_token')}` 
-                        }
-                      })
-                    .then(res => {
-                        console.log(res);
-                        this.setState({ 'events' : res.data});
-                        this.setState({ 'isLoggedIn' : true});
-                    })
-                .catch(err => { console.log(err); });
+                    `/events/${this.state.username}`
+                ).then(res => {
+                    console.log(res);
+                    this.setState({ events: res.data, isLoggedIn: true, loginError: false });
+                })
+                .catch(err => {
+                    console.log(err);
+                });
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                console.log(err);
+                this.setState({ isLoggedIn: false, loginError: true });
+            });
     }
 
     render() {
-        let { isLoggedIn } = this.state;
-        let body;
+        const { isLoggedIn, loginError } = this.state;
 
+        let alert;
+        if (loginError) {
+            alert = <Alert
+                message={"Failed login!"}
+                type="error"
+                style={{
+                    margin: "auto",
+                    width: '30%',
+                    marginTop: '2vh'
+                }} />;
+        } else {
+            alert = '';
+        }
+
+        let body;
+        let menu;
         if (!isLoggedIn) {
+            menu = <TabNavigator currentMenu="signin" isLoggedIn={isLoggedIn} />;
             body = (
                 <Form
                     name="normal_login"
@@ -67,7 +83,8 @@ class SigninForm extends Component {
                     onFinish={this.onFinish}
                     style={{
                         width: '30%',
-                        margin: 'auto'
+                        margin: 'auto',
+                        marginTop: '2vh'
                     }}
                 >
                     <Form.Item
@@ -113,13 +130,17 @@ class SigninForm extends Component {
                     </Form.Item>
                 </Form>);
         } else {
-            body = (<Scheduler events={this.state.events} username={this.state.username}/>);
+            menu = (<TabNavigator currentMenu="calendar" isLoggedIn={isLoggedIn} />);
+            body = (<Scheduler events={this.state.events} username={this.state.username} />);
         }
 
         return (
             <div>
-                <TabNavigator currentMenu="signin" />
-                {body}
+                {menu}
+                <div>
+                    {alert}
+                    {body}
+                </div>
             </div>
         );
     }
