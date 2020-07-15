@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Input, Button } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-// import axios from 'axios';
+import TabNavigator from './TabNavigator';
 import axiosInstance from '../api/auth';
 import Scheduler from './Scheduler';
 
@@ -118,6 +118,7 @@ class SigninForm extends Component {
 
         return (
             <div>
+                <TabNavigator currentMenu="signin" />
                 {body}
             </div>
         );

@@ -1,11 +1,14 @@
 import React from 'react';
 import './App.css';
-import TabNavigator from './components/TabNavigator';
+import {BrowserRouter as Router} from 'react-router-dom';
+import BaseRouter from './routes';
 
 function App() {
   return (
     <div className="App">
-      <TabNavigator />
+        <Router>
+          <BaseRouter />
+        </Router>
     </div>
   );
 }

@@ -1,9 +1,9 @@
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import status, permissions
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import action
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import get_object_or_404
 from .serializers import CustomUserSerializer, EventSerializer
 from .models import CustomUser, Event
@@ -75,4 +75,15 @@ class EventDelete(APIView):
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    
+class LogoutAndBlacklistRefreshToken(APIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = ()
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh_token"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST) 

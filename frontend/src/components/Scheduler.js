@@ -10,7 +10,6 @@ import { Form } from 'antd';
 import { Input } from 'antd';
 import moment from 'moment';
 import axiosInstance from '../api/auth';
-// import axios from 'axios';
 
 const { Text } = Typography;
 

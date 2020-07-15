@@ -11,4 +11,5 @@ urlpatterns = [
     path('event/edit/<int:pk>', views.EventEdit.as_view(), name="edit_event"),
     path('token/obtain/', TokenObtainPairView.as_view(), name='token_create'), 
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('blacklist/', views.LogoutAndBlacklistRefreshToken.as_view(), name='blacklist')
 ]

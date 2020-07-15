@@ -1,25 +1,34 @@
 import React from 'react';
-import { Tabs } from 'antd';
-import SigninForm from './SigninForm';
-import SignupForm from './SignupForm';
+import { Menu } from 'antd';
+import { Link } from "react-router-dom";
 
-const { TabPane } = Tabs;
+class TabNavigator extends React.Component {
+    state = {
+        current: this.props.currentMenu
+    };
 
-function callback(key) {
-    console.log(key);
+    handleClick = e => {
+        console.log('click ', e);
+        this.setState({ current: e.key });
+    };
+
+    render() {
+        const { current } = this.state;
+        return (
+            <Menu onClick={this.handleClick} selectedKeys={[current]} mode="horizontal">
+                <Menu.Item key="signin">
+                    <Link to="/signin/">
+                        Sign in
+                    </Link>
+                </Menu.Item>
+                <Menu.Item key="signup">
+                    <Link to="/signup/">
+                        Sign up
+                    </Link>
+                </Menu.Item>
+            </Menu>
+        );
+    }
 }
-
-const TabNavigator = () => (
-    <div>
-        <Tabs defaultActiveKey="1" onChange={callback} centered>
-            <TabPane tab="Sign in" key="1">
-                <SigninForm />
-            </TabPane>
-            <TabPane tab="Sign up" key="2">
-                <SignupForm />
-            </TabPane>
-        </Tabs>
-    </div>
-);
 
 export default TabNavigator;

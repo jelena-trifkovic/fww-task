@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Input, Button, Alert } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-// import axios from 'axios';
+import TabNavigator from './TabNavigator';
 import axiosInstance from '../api/auth';
 const buttonText = 'Sign up';
 
@@ -52,6 +52,8 @@ class SignupForm extends Component {
         }
 
         return (
+            <div>
+                <TabNavigator currentMenu="signup"/>
             <div
                 style={{
                     width: "30%",
@@ -109,6 +111,7 @@ class SignupForm extends Component {
                         </Button>
                     </Form.Item>
                 </Form>
+            </div>
             </div>
         );
     }
