@@ -13,8 +13,19 @@ python setup_or_run.py run
 
 Once the browser starts, go to the `/signin/` or `/signup/` endpoint.
 
-##Technology summary:
+## Technology summary:
 * Backend: Django Rest Framework (Python)
 * Frontend: React (JavaScript) and AntDesign (UI)
 * Database: SQLite
+
+## API overview
+
+* `api/users/<username>`
+* `api/user/create/`
+* `api/token/obtain/`
+* `api/token/refresh/`
+* `api/events/<username>`
+* `api/event/create/`
+* `api/event/delete/<int:pk>`
+* `api/event/edit/<int:pk>`
 
